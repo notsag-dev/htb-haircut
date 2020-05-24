@@ -65,11 +65,27 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 ===============================================================
 ```
 
-Found `/uploads` that is referenced by the image that appears of the page already.
+Found `/uploads` that is referenced by the image that appears on the page already.
 
-After checking several lists and ways of enumerating directories, finally this one got '/exposed.php`:
+After checking several lists and ways of enumerating directories, finally this one got `/exposed.php`:
 
 ```
-gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
+root@kali:~/htb/haircut# gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.10.24
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Extensions:     php
+[+] Timeout:        10s
+===============================================================
+2020/05/24 15:23:49 Starting gobuster
+===============================================================
+/uploads (Status: 301)
+/exposed.php (Status: 200)
 ```
-
+The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it.
