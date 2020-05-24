@@ -39,6 +39,10 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 10.55 seconds
 ```
 
+The web app running on port 80 is just an image.
+
+Initial directories enumeration with the common list:
+
 ```
 root@kali:~/htb/haircut# gobuster dir -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u ${HAIRCUT}
 ===============================================================
@@ -60,3 +64,12 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 2020/05/24 13:56:26 Finished
 ===============================================================
 ```
+
+Found `/uploads` that is referenced by the image that appears of the page already.
+
+After checking several lists and ways of enumerating directories, finally this one got '/exposed.php`:
+
+```
+gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
+```
+
