@@ -163,11 +163,25 @@ python3 -c "import pty; pty.spawn('/bin/bash');"
 By running ```LinEnum.sh``` (copied to the target machine by setting up a Python http server as before), it can be noticed that there's a suspicious SUID executable in /usr/bin/screen-4.5.0, that turns out to be a vulnerable version that allows privilege escalation:
 ```
 $ searchsploit screen 4.5.0
------------------------------------------------- ---------------------------------
- Exploit Title                                  |  Path
------------------------------------------------- ---------------------------------
-GNU Screen 4.5.0 - Local Privilege Escalation   | linux/local/41154.sh
-GNU Screen 4.5.0 - Local Privilege Escalation ( | linux/local/41152.txt
------------------------------------------------- ---------------------------------
+----------------------------------------------------------- ---------------------------------
+ Exploit Title                                             |  Path
+----------------------------------------------------------- ---------------------------------
+GNU Screen 4.5.0 - Local Privilege Escalation              | linux/local/41154.sh
+GNU Screen 4.5.0 - Local Privilege Escalation (PoC)        | linux/local/41152.txt
+----------------------------------------------------------- ---------------------------------
 Shellcodes: No Results
 ```
+
+I'd encourage you to first check the PoC to see what's going on, basically it is possible to create a file owned by root that can be edited by our group (www-data in this case) which can be used for privilege escalation.
+
+When trying to execute the script (first exploit listed) it's noticeable that it needs some manual action to be functional.
+- Change the way in which the script creates the .c files. It does is using `cat` and it does not work properly and adds more lines to the file that is not C code and naturally fails afterwards.
+- ```gcc``` fails to compile as it does not find ```cc1```. By doing ```locate cc1``` we see this is its location: ```/usr/lib/gcc/x86_64-linux-gnu/5```. Adding that to the path and trying again did the trick.
+
+After completing these manual actions, we get a root shell:
+```
+# whoami
+whoami
+root
+```
+
