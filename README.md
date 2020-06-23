@@ -160,7 +160,7 @@ Upgrade shell to more interactive one:
 python3 -c "import pty; pty.spawn('/bin/bash');"
 ```
 
-By running ´LinEnum.sh´ (copied to the target machine by setting up a Python http server as before), it can be noticed that there's a suspicious SUID executable in /usr/bin/screen-4.5.0, that turns out to be a vulnerable version that allows privilege escalation:
+By running ```LinEnum.sh``` (copied to the target machine by setting up a Python http server as before), it can be noticed that there's a suspicious SUID executable in /usr/bin/screen-4.5.0, that turns out to be a vulnerable version that allows privilege escalation:
 ```
 $ searchsploit screen 4.5.0
 ------------------------------------------------ ---------------------------------
