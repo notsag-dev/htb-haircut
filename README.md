@@ -175,3 +175,8 @@ After completing these manual actions, a root shell is popped when executing the
 whoami
 root
 ```
+
+Conclusions
+I enjoyed a lot this box even though I had to spend a lot of time working on it and it was quite frustrating at times. One lesson learned here was to always run LinEnum.sh if the privilege escalation path is not clear. I was initially trying to collect all the info manually but I was just missing it very badly.
+
+Also, it is important to note that the exploit we got using searchsploit did not work initially but just after it was tweaked a bit. Always check why things don't work and try to fix them manually!
