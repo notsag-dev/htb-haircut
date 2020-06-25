@@ -67,7 +67,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 
 Interesting, there's an `/uploads` directory. Despite it does not seem very useful now, it may come handy in the future.
 
-After trying with several other lists, which was a quite frustrating process to be honest, finally this one got a more intereseting result:
+After trying with several other lists, which was a quite frustrating process to be honest, finally this one had a more intereseting result:
 
 ```
 root@kali:~/htb/haircut# gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
