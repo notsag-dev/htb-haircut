@@ -167,7 +167,7 @@ I'd encourage you to first check the PoC to see what's going on, basically it is
 
 When trying to execute the script (first exploit listed) it's noticeable that it needs some manual action to be functional:
 - Change the way in which the script creates the .c files. It does is using `cat` and it does not work properly.
-- ```gcc``` fails to compile as it does not find `cc1`. By doing `locate cc1` we see this is its location: `/usr/lib/gcc/x86_64-linux-gnu/5`. Adding that path to the PATH env var retrying did the trick.
+- ```gcc``` fails to compile as it does not find `cc1`. By doing `locate cc1` we see this is its location: `/usr/lib/gcc/x86_64-linux-gnu/5`. Adding that path to the PATH env var and retrying did the trick.
 
 After completing these manual actions, a root shell is popped when executing the script:
 ```
