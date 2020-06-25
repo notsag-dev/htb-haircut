@@ -91,7 +91,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 
 The page `/exposed.php` has a text input, and when passing a URL it displays on screen the result of curling it. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
 
-## Discovery/Exploitation
+## Exploitation
 Checking `curl` man page for ways to get more information on the system or executing arbitrary code, I thought that using curl's request body (-d) could be an acceptable way of transmitting info to a listener. By leveraging backticks, commands can be executed and their results would be sent back to our listener.
 
 Set up listener in attacker machine: 
