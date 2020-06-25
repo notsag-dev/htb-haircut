@@ -89,7 +89,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /exposed.php (Status: 200)
 ```
 
-The page `/exposed.php` has a text input, and when passing a URL it apparently curls it in the back-end and displays on screen the result. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
+The page `/exposed.php` has a text input, and when passing a URL it apparently curls it in the back-end and displays the result on screen. I tried to inject some commands but some symbols/keywords were blocked by the back-end e.g. &, ;, |, python and nc. Curl flags were not blocked, though.
 
 ## Exploitation
 Checking the man page of `curl`, I thought that by using curl's request body (-d) it could be possible to transmit arbitrary info to a listener. By leveraging backticks, it could be possible to pass the result of a command execution to the listener. Neat!
