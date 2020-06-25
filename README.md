@@ -120,7 +120,7 @@ drwxr-xr-x 3 root     root     4.0K May 16  2017 ..
 drwxr-xr-x 2 www-data www-data 4.0K May 22  2017 uploads
 ```
 
-It seems `uploads` may be a good place to place a web shell as `www-data` has write permissions on it. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. Note that I use that one because I wanted to check it out, but other much simpler ones would be enough.
+It seems `uploads` may be a good place to place a web shell as `www-data` has write permissions on it. I'm going to use a PHP web shell called `Predator.php` present in this repo https://github.com/JohnTroony/php-webshells.git. Note I use that one because just to check it out, but other much simpler ones should be enough.
 
 The first step to copy the shell into the target server, is to make the shell "curleable" by exposing it through an http server in the attacker:
 ```
