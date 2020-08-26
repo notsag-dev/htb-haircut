@@ -11,7 +11,7 @@ Difficulty: Medium
 ## Initial enumeration
 [Nmap](https://github.com/nmap/nmap) scan on the target:
 
-`nmap -sV -sC -oN shocker.nmap 10.10.10.24`
+`nmap -sV -sC -oN haircut.nmap 10.10.10.24`
 
 Flags:
  - `-sV`: Version detection
